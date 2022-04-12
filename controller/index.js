@@ -20,7 +20,7 @@ exports.getCost = async (req , res) => {
     method: 'POST',
     url: 'https://api.rajaongkir.com/starter/cost',
     headers: {key: 'd5efe8aee69a28b829bb1fc959543281', 'content-type': 'application/x-www-form-urlencoded'},
-    form: {origin: '21', destination: req.body.destination, weight: 1700, courier: 'jne'}
+    form: {origin: '21', destination: req.body.destination, weight: req.body.weight, courier: 'jne'}
   };
   
   request(options, function (error, response, body) {
