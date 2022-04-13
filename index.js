@@ -6,7 +6,7 @@ const {router} = require('./routes');
 require('dotenv').config();
 const cors = require('cors');
 const corsOptions ={
-    origin: process.env.CLIENT_URL, 
+    origin: '*', 
     credentials:true,            //access-control-allow-credentials:true
     optionSuccessStatus:200
 }

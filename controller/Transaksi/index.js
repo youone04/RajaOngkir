@@ -65,3 +65,44 @@ exports.pesanan = (req, res) => {
         })
     })
 }
+
+exports.getTransaksi = (req, res) => {
+    db('transaksi')
+    .select('*')
+    .then(data => {
+        res.status(200).send({
+            status: 200,
+            message: 'Sucesss',
+            data: data
+        })
+    })
+    .catch(err => {
+        res.status(200).send({
+            status: 200,
+            message: 'Failed',
+            data: err
+        })
+    })
+}
+
+exports.konfirmasiPembayaran = (req, res) => {
+    console.log('req.body', req.body)
+    db('transaksi')
+    .where('id',req.params.id)
+    .update(req.body)
+    .then(data => {
+        res.status(200).send({
+            status: 200,
+            message: 'Sucesss',
+            data: data
+        })
+    })
+    .catch(err => {
+        console.log(err)
+        res.status(500).send({
+            status: 500,
+            message: 'Failed',
+            data: err
+        })
+    })
+}
