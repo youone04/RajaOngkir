@@ -17,8 +17,6 @@ app.use(morgan('dev'));
 app.use('/api', router);
 //hanlder error photos
 
-
-
 app.all('*', (req, res, next) => {
     res.status(404).send({
         status: 404,
