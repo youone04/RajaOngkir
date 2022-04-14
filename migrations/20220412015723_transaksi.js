@@ -9,8 +9,8 @@ exports.up = function(knex) {
         table.string('provinsi').notNullable();
         table.string('kabupaten').notNullable();
         table.string('alamat').notNullable();
-        table.string('ongkir').notNullable();
-        table.string('tagihan_total').notNullable();
+        table.integer('ongkir').notNullable();
+        table.integer('tagihan_total').notNullable();
         table.string('estimasi').notNullable();
         table.string('service').notNullable();
         table.string('no_resi');
