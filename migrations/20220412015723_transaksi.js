@@ -3,6 +3,7 @@ exports.up = function(knex) {
     .createTable('transaksi' , (table) => {
         table.increments('id').primary();
         table.integer('user_id').notNullable();
+        table.integer('produk_id').notNullable();
         table.string('username').notNullable();
         table.string('bukti_bayar').notNullable();
         table.string('email').notNullable();

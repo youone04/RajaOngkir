@@ -11,5 +11,6 @@ router.post('/transaksi', upload.single('bukti_bayar'), controllerTransaksi.tran
 router.get('/transaksi', controllerTransaksi.getTransaksi);
 router.get("/pesanan/:id", controllerTransaksi.pesanan);
 router.put("/konfirmasi/:id", controllerTransaksi.konfirmasiPembayaran);
+router.get("/rekapitulasi-transaksi", controllerTransaksi.rekapitulasiTransaksi);
 
 module.exports = { router };

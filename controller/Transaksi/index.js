@@ -24,6 +24,7 @@ exports.transaksi = async (req, res) => {
     gambar_produk,
     nama_produk,
     jumlah,
+    produk_id
   } = req.body;
 
   const hsl = new Promise((resolve, reject) => {
@@ -40,6 +41,7 @@ exports.transaksi = async (req, res) => {
         ongkir,
         tagihan_total,
         user_id,
+        produk_id,
         estimasi,
         service,
         jumlah,
@@ -97,6 +99,11 @@ exports.konfirmasiPembayaran = (req, result) => {
     .where("id", req.params.id)
     .update({ status, no_resi })
     .then(() => {
+      // result.status(200).send({
+      //   status: 200,
+      //   message: "Sucesss",
+      //   data: [],
+      // });
       
       const url = `https://docs.google.com/forms/d/e/1FAIpQLSduE9vXto2YWWObH8RCWs0X18FEREguIsRWxZ4rTONsmfARcQ/formResponse?usp=pp_url&entry.170224335=${username}&entry.1262973823=${no_resi}&entry.357809264=${email}&=`;
       https
@@ -129,3 +136,40 @@ exports.konfirmasiPembayaran = (req, result) => {
       });
     });
 };
+
+exports.rekapitulasiTransaksi = (req, res) => {
+  const{bulan , tahun} = req.query;
+  db.raw(
+    `SELECT * FROM transaksi WHERE to_char(created_at, 'YYYY-MM')  = '${tahun}-${bulan}' `
+  )
+  .then((data) => {
+    db.raw(`SELECT SUM(tagihan_total) FROM transaksi WHERE to_char(created_at, 'YYYY-MM')  = '${tahun}-${bulan}'`)
+    .then((data2) => {
+
+      res.status(200).send({
+        status: 200,
+        message: "Sucesss",
+        data: data.rows,
+        pendapatan: data2.rows[0].sum,
+      });
+    })
+    .catch((err) => {
+      console.log(err)
+      res.status(500).send({
+        status: 500,
+        message: "Failed",
+        data: err,
+      });
+    });
+
+  })
+
+  .catch((err) => {
+    console.log(err)
+    res.status(500).send({
+      status: 500,
+      message: "Failed",
+      data: err,
+    });
+  });
+}
