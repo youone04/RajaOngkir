@@ -140,10 +140,10 @@ exports.konfirmasiPembayaran = (req, result) => {
 exports.rekapitulasiTransaksi = (req, res) => {
   const{bulan , tahun} = req.query;
   db.raw(
-    `SELECT * FROM transaksi WHERE to_char(created_at, 'YYYY-MM')  = '${tahun}-${bulan}' `
+    `SELECT * FROM transaksi WHERE to_char(created_at, 'YYYY-MM')  = '${tahun}-${bulan}' AND WHERE status = 'true'`
   )
   .then((data) => {
-    db.raw(`SELECT SUM(tagihan_total) FROM transaksi WHERE to_char(created_at, 'YYYY-MM')  = '${tahun}-${bulan}'`)
+    db.raw(`SELECT SUM(tagihan_total) FROM transaksi WHERE to_char(created_at, 'YYYY-MM')  = '${tahun}-${bulan}' AND WHERE status = 'true'`)
     .then((data2) => {
 
       res.status(200).send({
@@ -160,6 +160,7 @@ exports.rekapitulasiTransaksi = (req, res) => {
         message: "Failed",
         data: err,
       });
+
     });
 
   })

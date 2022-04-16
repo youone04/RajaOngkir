@@ -21,7 +21,7 @@ exports.getCost = async (req , res) => {
   const options = {
     method: 'POST',
     url: 'https://api.rajaongkir.com/starter/cost',
-    headers: {key: '06a8391cee099e830ae1c549004bba3c', 'content-type': 'application/x-www-form-urlencoded'},
+    headers: {key: '5cebef2479c3e7a17263b50f0e3b51c8', 'content-type': 'application/x-www-form-urlencoded'},
     form: {origin: '21', destination: req.body.destination, weight: req.body.weight, courier: 'jne'}
   };
   
