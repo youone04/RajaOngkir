@@ -140,10 +140,10 @@ exports.konfirmasiPembayaran = (req, result) => {
 exports.rekapitulasiTransaksi = (req, res) => {
   const{bulan , tahun} = req.query;
   db.raw(
-    `SELECT * FROM transaksi WHERE to_char(created_at, 'YYYY-MM')  = '${tahun}-${bulan}' AND WHERE status = 'true'`
+    `SELECT * FROM transaksi WHERE to_char(created_at, 'YYYY-MM')  = '${tahun}-${bulan}' AND status = true`
   )
   .then((data) => {
-    db.raw(`SELECT SUM(tagihan_total) FROM transaksi WHERE to_char(created_at, 'YYYY-MM')  = '${tahun}-${bulan}' AND WHERE status = 'true'`)
+    db.raw(`SELECT SUM(tagihan_total) FROM transaksi WHERE to_char(created_at, 'YYYY-MM')  = '${tahun}-${bulan}' AND status = true`)
     .then((data2) => {
 
       res.status(200).send({
