@@ -99,34 +99,34 @@ exports.konfirmasiPembayaran = (req, result) => {
     .where("id", req.params.id)
     .update({ status, no_resi })
     .then(() => {
-      result.status(200).send({
-        status: 200,
-        message: "Sucesss",
-        data: [],
-      });
+      // result.status(200).send({
+      //   status: 200,
+      //   message: "Sucesss",
+      //   data: [],
+      // });
       
-      // const url = `https://docs.google.com/forms/d/e/1FAIpQLSduE9vXto2YWWObH8RCWs0X18FEREguIsRWxZ4rTONsmfARcQ/formResponse?usp=pp_url&entry.170224335=${username}&entry.1262973823=${no_resi}&entry.357809264=${email}&=`;
-      // https
-      //   .get(url, (res) => {
-      //     let data = "";
-      //     res.on("data", (chunk) => {
-      //       data += chunk;
-      //     });
-      //     res.on("end", () => {
-      //       result.status(200).send({
-      //           status: 200,
-      //           message: "Sucesss",
-      //           data: [],
-      //         });
-      //     });
-      //   })
-      //   .on("error", (err) => {
-      //       result.status(200).send({
-      //           status: 200,
-      //           message: "Failed",
-      //           data: err,
-      //         });
-      //   });
+      const url = `https://docs.google.com/forms/d/e/1FAIpQLSduE9vXto2YWWObH8RCWs0X18FEREguIsRWxZ4rTONsmfARcQ/formResponse?usp=pp_url&entry.170224335=${username}&entry.1262973823=${no_resi}&entry.357809264=${email}&=`;
+      https
+        .get(url, (res) => {
+          let data = "";
+          res.on("data", (chunk) => {
+            data += chunk;
+          });
+          res.on("end", () => {
+            result.status(200).send({
+                status: 200,
+                message: "Sucesss",
+                data: [],
+              });
+          });
+        })
+        .on("error", (err) => {
+            result.status(200).send({
+                status: 200,
+                message: "Failed",
+                data: err,
+              });
+        });
     })
     .catch((err) => {
       result.status(500).send({
