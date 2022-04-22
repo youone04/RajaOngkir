@@ -19,6 +19,7 @@ exports.up = function(knex) {
         table.string('nama_produk').notNullable();
         table.integer('jumlah').notNullable();
         table.boolean('status').defaultTo(false);
+        table.boolean('review').defaultTo(false);
         table.timestamp('created_at').defaultTo(knex.fn.now());
         table.timestamp('updated_at').defaultTo(knex.fn.now());
     })

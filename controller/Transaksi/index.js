@@ -24,7 +24,7 @@ exports.transaksi = async (req, res) => {
     gambar_produk,
     nama_produk,
     jumlah,
-    produk_id
+    produk_id,
   } = req.body;
 
   const hsl = new Promise((resolve, reject) => {
@@ -75,22 +75,45 @@ exports.pesanan = (req, res) => {
 };
 
 exports.getTransaksi = (req, res) => {
-  db("transaksi")
-    .select("*")
-    .then((data) => {
-      res.status(200).send({
-        status: 200,
-        message: "Sucesss",
-        data: data,
+  if (req.query.status === "") {
+    db("transaksi")
+      .select("*")
+      .then((data) => {
+        return res.status(200).send({
+          status: 200,
+          message: "Sucesss",
+          data: data,
+        });
+      })
+      .catch((err) => {
+        // console.log("err =>>", err);
+        return res.status(500).send({
+          status: 500,
+          message: "Failed",
+          data: err,
+        });
       });
-    })
-    .catch((err) => {
-      res.status(200).send({
-        status: 200,
-        message: "Failed",
-        data: err,
+  } else {
+    db("transaksi")
+      .where("status", req.query.status)
+      .select("*")
+      .then((data) => {
+        // console.log("data =>>", data);
+        res.status(200).send({
+          status: 200,
+          message: "Sucesss",
+          data: data,
+        });
+      })
+      .catch((err) => {
+        // console.log("err =>>", err);
+        res.status(500).send({
+          status: 500,
+          message: "Failed",
+          data: err,
+        });
       });
-    });
+  }
 };
 
 exports.konfirmasiPembayaran = (req, result) => {
@@ -104,7 +127,7 @@ exports.konfirmasiPembayaran = (req, result) => {
       //   message: "Sucesss",
       //   data: [],
       // });
-      
+
       const url = `https://docs.google.com/forms/d/e/1FAIpQLSduE9vXto2YWWObH8RCWs0X18FEREguIsRWxZ4rTONsmfARcQ/formResponse?usp=pp_url&entry.170224335=${username}&entry.1262973823=${no_resi}&entry.357809264=${email}&=`;
       https
         .get(url, (res) => {
@@ -114,18 +137,18 @@ exports.konfirmasiPembayaran = (req, result) => {
           });
           res.on("end", () => {
             result.status(200).send({
-                status: 200,
-                message: "Sucesss",
-                data: [],
-              });
+              status: 200,
+              message: "Sucesss",
+              data: [],
+            });
           });
         })
         .on("error", (err) => {
-            result.status(200).send({
-                status: 200,
-                message: "Failed",
-                data: err,
-              });
+          result.status(500).send({
+            status: 500,
+            message: "Failed",
+            data: err,
+          });
         });
     })
     .catch((err) => {
@@ -138,39 +161,53 @@ exports.konfirmasiPembayaran = (req, result) => {
 };
 
 exports.rekapitulasiTransaksi = (req, res) => {
-  const{bulan , tahun} = req.query;
+  const { bulan, tahun } = req.query;
   db.raw(
     `SELECT * FROM transaksi WHERE to_char(created_at, 'YYYY-MM')  = '${tahun}-${bulan}' AND status = true`
   )
-  .then((data) => {
-    db.raw(`SELECT SUM(tagihan_total) FROM transaksi WHERE to_char(created_at, 'YYYY-MM')  = '${tahun}-${bulan}' AND status = true`)
-    .then((data2) => {
-
-      res.status(200).send({
-        status: 200,
-        message: "Sucesss",
-        data: data.rows,
-        pendapatan: data2.rows[0].sum,
-      });
+    .then((data) => {
+      db.raw(
+        `SELECT SUM(tagihan_total) FROM transaksi WHERE to_char(created_at, 'YYYY-MM')  = '${tahun}-${bulan}' AND status = true`
+      )
+        .then((data2) => {
+          res.status(200).send({
+            status: 200,
+            message: "Sucesss",
+            data: data.rows,
+            pendapatan: data2.rows[0].sum,
+          });
+        })
+        .catch((err) => {
+          // console.log(err);
+          res.status(500).send({
+            status: 500,
+            message: "Failed",
+            data: err,
+          });
+        });
     })
+
     .catch((err) => {
-      console.log(err)
+      // console.log(err);
       res.status(500).send({
         status: 500,
         message: "Failed",
         data: err,
       });
-
     });
+};
 
-  })
-
-  .catch((err) => {
-    console.log(err)
-    res.status(500).send({
+exports.deleteTransaksi = async (req, result) => {
+  try {
+    await db("transaksi").where("id", req.params.id).del();
+    result.status(200).send({
+      status: 200,
+      message: "Sucesss",
+    });
+  } catch (error) {
+    result.status(500).send({
       status: 500,
       message: "Failed",
-      data: err,
     });
-  });
-}
+  }
+};
