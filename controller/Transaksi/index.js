@@ -25,6 +25,7 @@ exports.transaksi = async (req, res) => {
     nama_produk,
     jumlah,
     produk_id,
+    metode_pembayaran,
   } = req.body;
 
   const hsl = new Promise((resolve, reject) => {
@@ -46,6 +47,7 @@ exports.transaksi = async (req, res) => {
         service,
         jumlah,
         bukti_bayar: result.url,
+        metode_pembayaran,
       });
       resolve(result.url);
     });
@@ -163,11 +165,11 @@ exports.konfirmasiPembayaran = (req, result) => {
 exports.rekapitulasiTransaksi = (req, res) => {
   const { bulan, tahun } = req.query;
   db.raw(
-    `SELECT * FROM transaksi WHERE to_char(created_at, 'YYYY-MM')  = '${tahun}-${bulan}' AND status = true`
+    `SELECT * FROM transaksi WHERE to_char(created_at, 'YYYY-MM')  = '${tahun}-${bulan}' AND (status = '1' OR status = '2')`
   )
     .then((data) => {
       db.raw(
-        `SELECT SUM(tagihan_total) FROM transaksi WHERE to_char(created_at, 'YYYY-MM')  = '${tahun}-${bulan}' AND status = true`
+        `SELECT SUM(tagihan_total) FROM transaksi WHERE to_char(created_at, 'YYYY-MM')  = '${tahun}-${bulan}' AND (status = '1' OR status = '2')`
       )
         .then((data2) => {
           res.status(200).send({
@@ -206,6 +208,60 @@ exports.deleteTransaksi = async (req, result) => {
     });
   } catch (error) {
     result.status(500).send({
+      status: 500,
+      message: "Failed",
+    });
+  }
+};
+
+exports.diterima = async (req, res) => {
+  try {
+    await db("transaksi").where("id", req.params.id).update({
+      status: "2",
+    });
+    res.status(200).send({
+      status: 200,
+      message: "Sucesss",
+    });
+  } catch (error) {
+    res.status(500).send({
+      status: 500,
+      message: "Failed",
+    });
+  }
+};
+
+exports.getpendapatan = async (req, res) => {
+  try {
+    const total = await db.raw(
+      `SELECT SUM(tagihan_total) FROM transaksi WHERE (status = '1' OR status = '2')`
+    );
+
+    const totalGopay = await db.raw(
+      `SELECT SUM(tagihan_total) FROM transaksi WHERE metode_pembayaran = 'gopay' AND (status = '1' OR status = '2')`
+    );
+
+    const totalDana = await db.raw(
+      `SELECT SUM(tagihan_total) FROM transaksi WHERE metode_pembayaran = 'dana' AND (status = '1' OR status = '2')`
+    );
+    const totalBca = await db.raw(
+      `SELECT SUM(tagihan_total) FROM transaksi WHERE metode_pembayaran = 'bank bca' AND (status = '1' OR status = '2')`
+    );
+    const data = {
+      total: total.rows[0].sum,
+      gopay: totalGopay.rows[0].sum,
+      bca: totalBca.rows[0].sum,
+      dana: totalDana.rows[0].sum,
+    };
+
+    res.status(200).send({
+      status: 200,
+      message: "Sucesss",
+      data,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
       status: 500,
       message: "Failed",
     });

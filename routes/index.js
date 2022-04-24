@@ -15,6 +15,7 @@ router.put("/konfirmasi/:id", controllerTransaksi.konfirmasiPembayaran);
 router.get("/rekapitulasi-transaksi", controllerTransaksi.rekapitulasiTransaksi);
 router.post("/review/:id", controllerReview.review);
 router.delete("/konfirmasi/:id", controllerTransaksi.deleteTransaksi);
-
+router.put("/diterima/:id", controllerTransaksi.diterima);
+router.get("/pendapatan", controllerTransaksi.getpendapatan);
 
 module.exports = { router };
