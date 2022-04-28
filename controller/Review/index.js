@@ -1,10 +1,9 @@
 const db = require("../../db");
 
-exports.review = (req, res) => {
-    const {review} = req.body;
+exports.review =async (req, res) => {
     const {id} = req.params;
    try{
-    db("transaksi").update({review}).where('id' ,id)
+  await  db("transaksi").update({review:true}).where('id' ,id)
     res.status(200).send({
         status: 200,
         message: 'success'
